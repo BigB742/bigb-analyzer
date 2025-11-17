@@ -1,0 +1,36 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch ./server.js",
+    "players:sync:all": "node scripts/syncAllNFLPlayers.js",
+    "players:dedupe": "node scripts/dedupePlayers.js",
+    "players:diag:dupes": "node scripts/diagListDupes.js",
+    "players:dedupe:one": "cross-env DEDUPE_KEY='{\"name\":\"Michael Penix\",\"team\":\"ATL\",\"position\":\"QB\"}' node scripts/dedupePlayers.js",
+    "players:cleanup:manual": "node scripts/cleanupManualTestPlayers.js",
+    "players:cleanup:nonfantasy": "node scripts/cleanupNonFantasyPlayers.js",
+    "players:backfill:newstats": "node scripts/backfillNewStats.js",
+    "stats:sync:week": "node scripts/syncWeeklyStats.js",
+    "stats:backfill": "node scripts/backfill.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "googleapis": "^166.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.1",
+    "node-cron": "^4.2.1",
+    "socket.io": "^4.7.5",
+    "stripe": "^17.7.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
