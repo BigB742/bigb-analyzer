@@ -18,9 +18,23 @@ import weeklyUnlockRoutes from "./routes/weeklyUnlock.js";
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_ORIGIN,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 app.post("/api/webhooks/stripe", express.raw({ type: "application/json" }), stripeWebhookHandler);
 app.use(express.json());
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 app.use("/api", pingRoutes);
 app.use("/api", qbLinesRoutes);
