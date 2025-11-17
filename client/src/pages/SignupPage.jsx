@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import api from "../apiClient.js";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -22,19 +23,13 @@ export default function SignupPage() {
     event.preventDefault();
     setStatus({ loading: true, error: null });
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        throw new Error(data?.message || "Unable to create account.");
-      }
+      const response = await api.post("/api/auth/signup", form);
+      const data = response?.data;
       login({ token: data.token, user: data.user });
       navigate("/premium");
     } catch (error) {
-      setStatus({ loading: false, error: error.message || "Signup failed." });
+      const message = error?.response?.data?.message || error.message || "Signup failed.";
+      setStatus({ loading: false, error: message });
     }
   };
 

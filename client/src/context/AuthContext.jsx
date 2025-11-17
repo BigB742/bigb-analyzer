@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
 } from "react";
+import api from "../apiClient.js";
 
 const STORAGE_KEY = "bigb-auth";
 
@@ -105,13 +106,12 @@ export function AuthProvider({ children }) {
     let cancelled = false;
     async function fetchProfile() {
       try {
-        const response = await fetch("/api/auth/me", {
+        const response = await api.get("/api/auth/me", {
           headers: {
             Authorization: `Bearer ${state.token}`,
           },
         });
-        if (!response.ok) return;
-        const data = await response.json().catch(() => null);
+        const data = response?.data;
         if (!cancelled && data?.user) {
           setState((current) => ({
             ...current,

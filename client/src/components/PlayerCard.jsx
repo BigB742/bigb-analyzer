@@ -6,6 +6,7 @@ import PremiumStatValue from "./PremiumStatValue.jsx";
 import { PROP_FIELDS, getPropFieldValue } from "../utils/propFields.js";
 import { getTeamBrand } from "../teamBranding.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import api from "../apiClient.js";
 
 export default function PlayerCard({ qb, editable = false, onPropChange }) {
   const {
@@ -68,21 +69,17 @@ export default function PlayerCard({ qb, editable = false, onPropChange }) {
       if (token) {
         headers.Authorization = `Bearer ${token}`;
       }
-      const response = await fetch("/api/weekly-unlock", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ playerId: qb.id, playerName: qb.name }),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        const message = data?.message || "Unable to use weekly unlock.";
-        throw new Error(message);
-      }
-      if (data?.user) {
-        setUser(data.user);
+      const response = await api.post(
+        "/api/weekly-unlock",
+        { playerId: qb.id, playerName: qb.name },
+        { headers },
+      );
+      if (response?.data?.user) {
+        setUser(response.data.user);
       }
     } catch (err) {
-      setUnlockError(err.message || "Unable to use weekly unlock.");
+      const message = err?.response?.data?.message || err.message || "Unable to use weekly unlock.";
+      setUnlockError(message);
     } finally {
       setUnlocking(false);
     }

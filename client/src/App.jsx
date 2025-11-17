@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import api from "./apiClient.js";
 import QBPropsBoardPage from "./pages/QBPropsBoardPage.jsx";
 import PlayerDetailPage from "./pages/PlayerDetailPage.jsx";
 import BigBPicksPage from "./pages/BigBPicksPage.jsx";
@@ -129,12 +130,8 @@ export default function App() {
       setError(null);
 
       try {
-        const response = await fetch("/api/qb-lines");
-        const data = await response.json().catch(() => null);
-        if (!response.ok) {
-          const message = data?.message || `Request failed with status ${response.status}`;
-          throw new Error(message);
-        }
+        const response = await api.get("/api/qb-lines");
+        const data = response?.data;
 
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error("No QB lines found in Google Sheets.");

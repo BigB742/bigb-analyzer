@@ -9,6 +9,7 @@ import PremiumStatValue from "../components/PremiumStatValue.jsx";
 import { qbList } from "../qbData.js";
 import { getTeamMeta } from "../teamMeta.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import api from "../apiClient.js";
 
 const STAT_FIELDS = [
   { key: "pass_att", label: "Pass Att" },
@@ -131,14 +132,9 @@ export default function PlayerDetailPage({ qbProps }) {
           query.set("opponent", selectedOpponent);
         }
         const queryString = query.toString();
-        const response = await fetch(`/api/qb/${playerId}/details${queryString ? `?${queryString}` : ""}`);
-        const data = await response.json();
-        if (!response.ok) {
-          const message = data?.message || "Failed to load player details.";
-          throw new Error(message);
-        }
+        const response = await api.get(`/api/qb/${playerId}/details${queryString ? `?${queryString}` : ""}`);
         if (!cancelled) {
-          setDetail(data);
+          setDetail(response?.data);
         }
       } catch (err) {
         console.error(err);

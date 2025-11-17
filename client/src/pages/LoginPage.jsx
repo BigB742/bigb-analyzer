@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import api from "../apiClient.js";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -18,21 +19,15 @@ export default function LoginPage() {
     event.preventDefault();
     setStatus({ loading: true, error: null });
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        throw new Error(data?.message || "Invalid email or password.");
-      }
+      const response = await api.post("/api/auth/login", form);
+      const data = response?.data;
       login({ token: data.token, user: data.user });
       const params = new URLSearchParams(location.search);
       const redirect = params.get("redirect") || "/";
       navigate(redirect);
     } catch (error) {
-      setStatus({ loading: false, error: error.message || "Unable to login." });
+      const message = error?.response?.data?.message || error.message || "Unable to login.";
+      setStatus({ loading: false, error: message });
     }
   };
 

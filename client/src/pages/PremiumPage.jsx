@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import api from "../apiClient.js";
 import bigbLogo from "../assets/bigb-logo-dark.svg";
 
 export default function PremiumPage() {
@@ -35,25 +36,20 @@ export default function PremiumPage() {
     if (isPremiumUser) return;
     try {
       setCheckoutState({ loading: true, error: null });
-      const response = await fetch("/api/premium/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ priceId: stripePriceId }),
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        throw new Error(data?.message || "Unable to begin checkout.");
-      }
+      const response = await api.post(
+        "/api/premium/create-checkout-session",
+        { priceId: stripePriceId },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      const data = response?.data;
       if (data?.url) {
         window.location.href = data.url;
         return;
       }
       throw new Error("Checkout session missing url.");
     } catch (error) {
-      setCheckoutState({ loading: false, error: error.message || "Unable to upgrade." });
+      const message = error?.response?.data?.message || error.message || "Unable to upgrade.";
+      setCheckoutState({ loading: false, error: message });
     } finally {
       setCheckoutState((prev) => ({ ...prev, loading: false }));
     }

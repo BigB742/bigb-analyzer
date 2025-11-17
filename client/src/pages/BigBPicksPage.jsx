@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import BecomePremiumCTA from "../components/BecomePremiumCTA.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import api from "../apiClient.js";
 
 const PREMIUM_MARKETS = new Set(["pass attempts", "pass completions", "completions"]);
 
@@ -119,12 +120,8 @@ export default function BigBPicksPage() {
         setLoading(true);
         setError(null);
       }
-      const response = await fetch(`/api/bigb-picks${forceRefresh ? "?forceRefresh=1" : ""}`);
-      const data = await response.json().catch(() => null);
-      if (!response.ok) {
-        const message = data?.message || `Failed to load picks (status ${response.status})`;
-        throw new Error(message);
-      }
+      const response = await api.get(`/api/bigb-picks${forceRefresh ? "?forceRefresh=1" : ""}`);
+      const data = response?.data;
       setPicks(Array.isArray(data?.picks) ? data.picks : []);
     } catch (err) {
       console.error("Failed to fetch picks:", err);
