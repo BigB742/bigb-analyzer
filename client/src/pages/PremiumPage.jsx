@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import api from "../apiClient.js";
@@ -11,9 +11,8 @@ export default function PremiumPage() {
   const status = query.get("status");
   const { isAuthenticated, token, user } = useAuth();
   const [checkoutState, setCheckoutState] = useState({ loading: false, error: null });
-  const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
   const stripePriceId = import.meta.env.VITE_STRIPE_PRICE_ID;
-  const isStripeConfigured = Boolean(publishableKey && stripePriceId);
+  const isCheckoutConfigured = Boolean(stripePriceId);
   const isLoggedIn = Boolean(isAuthenticated);
   const isPremiumUser = Boolean(user?.isPremium);
   const noteText = !isLoggedIn
@@ -28,8 +27,8 @@ export default function PremiumPage() {
   const handleViewProjections = () => navigate("/");
 
   const handleCheckout = async () => {
-    if (!isStripeConfigured) {
-      setCheckoutState({ loading: false, error: "Stripe is not configured." });
+    if (!isCheckoutConfigured) {
+      setCheckoutState({ loading: false, error: "Stripe price is not configured." });
       return;
     }
     if (!isLoggedIn) {
@@ -164,11 +163,6 @@ export default function PremiumPage() {
         </div>
       </div>
 
-      {!isStripeConfigured && (
-        <div className="premium-error">
-          Stripe is not configured. Set VITE_STRIPE_PUBLISHABLE_KEY and VITE_STRIPE_PRICE_ID, then restart.
-        </div>
-      )}
     </section>
   );
 }

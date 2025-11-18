@@ -1097,6 +1097,16 @@
   gap: 2rem;
 }
 
+.premium-success-banner {
+  grid-column: 1 / -1;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.08);
+  color: #bbf7d0;
+  padding: 0.95rem 1.25rem;
+  border-radius: 18px;
+  font-size: 0.95rem;
+}
+
 .premium-page__content h1 {
   margin: 0.5rem 0;
   font-size: clamp(2rem, 3vw, 3rem);
