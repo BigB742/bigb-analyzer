@@ -10,8 +10,9 @@ dotenv.config();
 const router = Router();
 const {
   STRIPE_PRICE_ID,
-  FRONTEND_URL = "http://localhost:5173",
+  CLIENT_ORIGIN,
 } = process.env;
+const PREMIUM_REDIRECT_BASE = CLIENT_ORIGIN || "https://bigb-analyzer.vercel.app";
 
 router.post("/unlock-once", requireAuth, async (req, res) => {
   try {
@@ -75,8 +76,8 @@ router.post("/create-checkout-session", requireAuth, async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${FRONTEND_URL}/premium?status=success`,
-      cancel_url: `${FRONTEND_URL}/premium?status=cancel`,
+      success_url: `${PREMIUM_REDIRECT_BASE}/premium?status=success`,
+      cancel_url: `${PREMIUM_REDIRECT_BASE}/premium?status=cancelled`,
       metadata: {
         userId: user._id.toString(),
       },
