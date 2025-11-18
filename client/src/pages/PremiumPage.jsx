@@ -1,11 +1,14 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import api from "../apiClient.js";
 import bigbLogo from "../assets/bigb-logo-dark.svg";
 
 export default function PremiumPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const query = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const status = query.get("status");
   const { isAuthenticated, token, user } = useAuth();
   const [checkoutState, setCheckoutState] = useState({ loading: false, error: null });
   const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -58,6 +61,11 @@ export default function PremiumPage() {
   return (
     <section className="premium-page">
       <div className="premium-page__hero">
+        {status === "success" && (
+          <div className="premium-success-banner">
+            ✅ Payment successful. Your BigB Premium subscription is active in test mode. You can now access Premium QB props when logged in.
+          </div>
+        )}
         <div className="premium-page__content">
           <div className="premium-page__meta">
             <img src={bigbLogo} alt="BigB logo" className="premium-page__logo" />
